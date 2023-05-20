@@ -43,8 +43,8 @@ def LedThread():
         pixels.show()
         
 _thread.start_new_thread(LedThread, ())
-ads = ADS.ADS1115(i2c)
-ads2 = ADS.ADS1115(i2c,address=73)
+ads = ADS.ADS1115(i2c,data_rate=860)
+ads2 = ADS.ADS1115(i2c,address=73,data_rate=860)
 
 chan_stickx = AnalogIn(ads, ADS.P0)
 chan_sticky = AnalogIn(ads, ADS.P1)
