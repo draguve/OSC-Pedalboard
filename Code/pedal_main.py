@@ -9,22 +9,14 @@ import array
 
 pixel_pin = 0
 num_pixels = 6
-pixels = Neopixel(
-    pin=pixel_pin,
-    num_leds=num_pixels,
-    state_machine=0
-)
-pixels.brightness(40)
+adc_peak = 26000
 
-def clerp(begin,end,t):
-    return min(max(begin + t*(end-begin), begin), end)
+def lerp(begin,end,t):
+    return begin + t*(end-begin)
 
-RED = (255, 0, 0)
-YELLOW = (255, 150, 0)
-GREEN = (0, 255, 0)
-CYAN = (0, 255, 255)
-BLUE = (0, 0, 255)
-PURPLE = (180, 0, 255)
+def clamp(value,v_min,v_max):
+    return min(max(value,v_min),v_max)
+    
 
 i2c = busio.I2C(scl=board.GP19, sda=board.GP18)
 #i2c.try_lock()
@@ -33,15 +25,25 @@ i2c = busio.I2C(scl=board.GP19, sda=board.GP18)
 adc_values = array.array('i', (0 for _ in range(6)))
 
 def LedThread():
+
+    pixels = Neopixel(
+        pin=pixel_pin,
+        num_leds=num_pixels,
+        state_machine=0
+    )
+    pixels.brightness(40)
+
+    last_values = array.array("f",(0.0 for _ in range(6)))
     while True:
-        pixels.set_pixel(0,(clerp(0,255,adc_values[0]/32767),0,0))
-        pixels.set_pixel(1,(clerp(0,255,adc_values[1]/32767),0,0))
-        pixels.set_pixel(2,(clerp(0,255,adc_values[2]/32767),0,0))
-        pixels.set_pixel(3,(clerp(0,255,adc_values[3]/32767),0,0))
-        pixels.set_pixel(4,(clerp(0,255,adc_values[4]/32767),0,0))
-        pixels.set_pixel(5,(clerp(0,255,adc_values[5]/32767),0,0))
+        for i in range(len(adc_values)):
+            t_value = clamp(adc_values[i]/adc_peak,0.0,1.0)
+            pixels.set_pixel(i,(lerp(0,255,t_value),0,0))
+            t_value = round(t_value,2)
+            if(t_value != last_values[i]):
+                print(f"{i} {t_value}")
+            last_values[i] = t_value
         pixels.show()
-        
+                
 _thread.start_new_thread(LedThread, ())
 ads = ADS.ADS1115(i2c,data_rate=860)
 ads2 = ADS.ADS1115(i2c,address=73,data_rate=860)
