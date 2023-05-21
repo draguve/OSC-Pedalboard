@@ -33,16 +33,8 @@ i2c = busio.I2C(scl=board.GP19, sda=board.GP18)
 #i2c.try_lock()
 #i2c.scan()
 
-ControlNames =[
-    "/controls/Slider",
-    "/controls/Knob0",
-    "/controls/Knob1",
-    "/controls/Knob2",
-    "/controls/Knob3",
-    "/controls/Knob4",
-]
-
 adc_values = array.array('i', (0 for _ in range(6)))
+stick_values = array.array('i',(0 for _ in range(2)))
 
 
 def ADCThread():
@@ -66,6 +58,8 @@ def ADCThread():
         adc_values[3] = chan_knob2.value
         adc_values[4] = chan_knob3.value
         adc_values[5] = chan_knob4.value
+        stick_values[0] = chan_stickx.value
+        stick_values[1] = chan_sticky.value
                 
 _thread.start_new_thread(ADCThread, ())
 
@@ -82,18 +76,28 @@ wlan.active(True)
 wlan.connect(ssid, password)
 print("Here")
 last_values = array.array("f",(0.0 for _ in range(6)))
+last_stick_values = array.array('f',(0 for _ in range(2)))
 
 while True:
     if wlan.isconnected() == True and osc == None:
         print("Connected : ",wlan.ifconfig())
         osc = Client(OSC_Server, OSC_Port)
+    isConnected = wlan.isconnected() == True and osc != None
     for i in range(len(adc_values)):
         t_value = clamp(adc_values[i]/adc_peak,0.0,1.0)
         pixels.set_pixel(i,(lerp(0,255,t_value),0,0))
         t_value = round(t_value,2)
         if(t_value != last_values[i]):
-            if wlan.isconnected() == True and osc != None:
-                osc.send(ControlNames[i], t_value)
+            if isConnected:
+                osc.send(f"/controls/Pot{i}", t_value)
             print(f"{i} {t_value}")
         last_values[i] = t_value
+    for i in range(len(last_stick_values)):
+        t_value = clamp(stick_values[i]/adc_peak,0.0,1.0)
+        t_value = round(t_value,2)
+        if(t_value != last_stick_values[i]):
+            if isConnected:
+                osc.send(f"/controls/Stick{i}", t_value)
+            print(f"Stick {i} {t_value}")
+        last_stick_values[i] = t_value
     pixels.show()
