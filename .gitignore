@@ -131,3 +131,4 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,kicad
 
 Code/.Trashes
+Code/compiled
