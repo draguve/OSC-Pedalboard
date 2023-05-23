@@ -82,7 +82,6 @@ wlan.active(True)
 wlan.connect(ssid, password)
 print("Here")
 last_values = array.array("f",[0,0,0,0,0,0])
-last_stick_values = array.array('f',[0,0])
 last_stomp_values = array.array('i',[0,0])
 
 while True:
@@ -93,26 +92,18 @@ while True:
     for i in range(len(adc_values)):
         t_value = clamp(adc_values[i]/adc_peak,0.0,1.0)
         t_value = round(t_value,2)
+        pixels.set_pixel(i,(lerp(0,255,t_value),0,0))
         if(t_value != last_values[i]):
-            pixels.set_pixel(i,(lerp(0,255,t_value),0,0))
             if isConnected:
                 osc.send(f"/controls/Pot{i}", t_value)
             print(f"Pot {i} {t_value}")
         last_values[i] = t_value
-    for i in range(len(last_stick_values)):
-        t_value = clamp(stick_values[i]/adc_peak,0.0,1.0)
-        t_value = round(t_value,2)
-        if(t_value != last_stick_values[i]):
-            if isConnected:
-                osc.send(f"/controls/Stick{i}", t_value)
-            print(f"Stick {i} {t_value}")
-        last_stick_values[i] = t_value
     for i in range(len(last_stomp_values)):
         t_value = stomp_values[i]
+        pixels.set_pixel(6+i,(0,t_value*255,0))
         if(t_value != last_stomp_values[i]):
-            pixels.set_pixel(6+i,(0,t_value*255,0))
             if isConnected:
                 osc.send(f"/controls/Stomp{i}", float(t_value))
             print(f"Stomp {i} {t_value}")
-        last_stick_values[i] = t_value
+        last_stomp_values[i] = t_value
     pixels.show()
