@@ -20,7 +20,7 @@ password = 'pioneer123'
 OSC_Server = '192.168.80.176'
 OSC_Port = 8000
 
-pixel_pin = 0
+pixel_pin = 3  
 num_pixels = 8
 adc_peak = 26000
 
@@ -35,35 +35,33 @@ i2c = busio.I2C(scl=board.GP19, sda=board.GP18)
 #i2c.try_lock()
 #i2c.scan()
 
-adc_values = array.array('i', [0,0,0,0,0,0])
-stick_values = array.array('i',[0,0])
+adc_values = array.array('i', [0,0,0,0])
+# stick_values = array.array('i',[0,0])
 stomp_values = array.array('i',[0,0])
 
 def ADCThread():
-    ads = ADS.ADS1115(i2c,data_rate=860)
-    ads2 = ADS.ADS1115(i2c,address=73,data_rate=860)
+    ads = ADS.ADS1115(i2c,address=73,data_rate=860)
 
-    chan_stickx = AnalogIn(ads, ADS.P0)
-    chan_sticky = AnalogIn(ads, ADS.P1)
-    chan_slider = AnalogIn(ads2, ADS.P0)
-    chan_knob0 = AnalogIn(ads2, ADS.P1)
-    chan_knob1 = AnalogIn(ads2, ADS.P2)
-    chan_knob2 = AnalogIn(ads2, ADS.P3)
-    chan_knob3 = AnalogIn(ads, ADS.P2)
-    chan_knob4 = AnalogIn(ads, ADS.P3)
+#     chan_stickx = AnalogIn(ads2, ADS.P1)
+#     chan_sticky = AnalogIn(ads2, ADS.P2)
+#     chan_slider = AnalogIn(ads2, ADS.P3)
+    chan_knob0 = AnalogIn(ads, ADS.P0)
+    chan_knob1 = AnalogIn(ads, ADS.P1)
+    chan_knob2 = AnalogIn(ads, ADS.P2)
+    chan_knob3 = AnalogIn(ads, ADS.P3)
     
-    stompButton1 = Pin(14, Pin.IN, Pin.PULL_DOWN)
-    stompButton2 = Pin(15, Pin.IN, Pin.PULL_DOWN)
+    stompButton1 = Pin(11, Pin.IN, Pin.PULL_DOWN)
+    stompButton2 = Pin(12, Pin.IN, Pin.PULL_DOWN)
 
     while(True):
-        adc_values[0] = chan_slider.value
-        adc_values[1] = chan_knob0.value
-        adc_values[2] = chan_knob1.value
-        adc_values[3] = chan_knob2.value
-        adc_values[4] = chan_knob3.value
-        adc_values[5] = chan_knob4.value
-        stick_values[0] = chan_stickx.value
-        stick_values[1] = chan_sticky.value
+        adc_values[0] = chan_knob0.value
+        adc_values[1] = chan_knob1.value
+        adc_values[2] = chan_knob2.value
+        adc_values[3] = chan_knob3.value
+        #adc_values[4] = chan_knob3.value
+        #adc_values[5] = chan_knob4.value
+        #stick_values[0] = chan_stickx.value
+        #stick_values[1] = chan_sticky.value
         stomp_values[0] = stompButton1.value()
         stomp_values[1] = stompButton2.value()
                 
@@ -81,7 +79,7 @@ wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect(ssid, password)
 print("Here")
-last_values = array.array("f",[0,0,0,0,0,0])
+last_values = array.array("f",[0,0,0,0])
 last_stomp_values = array.array('i',[0,0])
 
 while True:
@@ -100,7 +98,7 @@ while True:
         last_values[i] = t_value
     for i in range(len(last_stomp_values)):
         t_value = stomp_values[i]
-        pixels.set_pixel(6+i,(0,t_value*255,0))
+        pixels.set_pixel(4+i,(0,t_value*255,0))
         if(t_value != last_stomp_values[i]):
             if isConnected:
                 osc.send(f"/controls/Stomp{i}", float(t_value))
