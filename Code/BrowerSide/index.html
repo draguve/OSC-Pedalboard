@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-wrapper">
+        <a href="#" class="brand-logo">PedalBoard</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down"></ul>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="divider" style="margin-bottom: 5em;"></div>
+      <div class="row" id="NotSupported">
+        <h5>WebSerial is not supported</h5>
+      </div>
+      <div class="row" id="ConnectButton">
+        <button
+          class="btn waves-effect waves-light"
+          type="submit"
+          name="action"
+          onclick="connectToPedal()"
+        >
+          Connect
+        </button>
+      </div>
+      <div class="row" id="ConnectForm">
+        <form class="col s12">
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="Wifi_SSID" type="text" class="validate" />
+              <label for="Wifi_SSID">Wifi SSID</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="password" type="text" class="validate" />
+              <label for="password">Password</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s6">
+              <input
+                placeholder="X.X.X.X"
+                id="IPAddress"
+                type="text"
+                class="validate"
+              />
+              <label for="IPAddress">IP Address</label>
+            </div>
+            <div class="input-field col s6">
+              <input id="Port" type="text" class="validate" />
+              <label for="Port">Port</label>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+  <script src="index.js"></script>
+</html>

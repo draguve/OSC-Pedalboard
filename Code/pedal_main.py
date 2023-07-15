@@ -32,19 +32,12 @@ def clamp(value,v_min,v_max):
     
 
 i2c = busio.I2C(scl=board.GP19, sda=board.GP18)
-#i2c.try_lock()
-#i2c.scan()
 
 adc_values = array.array('i', [0,0,0,0])
-# stick_values = array.array('i',[0,0])
 stomp_values = array.array('i',[0,0])
 
 def ADCThread():
     ads = ADS.ADS1115(i2c,address=73,data_rate=860)
-
-#     chan_stickx = AnalogIn(ads2, ADS.P1)
-#     chan_sticky = AnalogIn(ads2, ADS.P2)
-#     chan_slider = AnalogIn(ads2, ADS.P3)
     chan_knob0 = AnalogIn(ads, ADS.P0)
     chan_knob1 = AnalogIn(ads, ADS.P1)
     chan_knob2 = AnalogIn(ads, ADS.P2)
@@ -58,10 +51,6 @@ def ADCThread():
         adc_values[1] = chan_knob1.value
         adc_values[2] = chan_knob2.value
         adc_values[3] = chan_knob3.value
-        #adc_values[4] = chan_knob3.value
-        #adc_values[5] = chan_knob4.value
-        #stick_values[0] = chan_stickx.value
-        #stick_values[1] = chan_sticky.value
         stomp_values[0] = stompButton1.value()
         stomp_values[1] = stompButton2.value()
                 
