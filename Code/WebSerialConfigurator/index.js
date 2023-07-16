@@ -6,21 +6,42 @@ var writer = null;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 this.messages = [];
+var clicked = 0;
+
+$(".toggle-password").click(function (e) {
+  e.preventDefault();
+
+  $(this).toggleClass("toggle-password");
+  if (clicked == 0) {
+    $(this).html('<span class="material-icons">visibility_off</span >');
+    clicked = 1;
+  } else {
+    $(this).html('<span class="material-icons">visibility</span >');
+    clicked = 0;
+  }
+
+  var input = $($(this).attr("toggle"));
+  if (input.attr("type") == "password") {
+    input.attr("type", "text");
+  } else {
+    input.attr("type", "password");
+  }
+});
 
 const onconnect = (e) => {
-  console.log(id + 'device connected', e);
+  console.log(id + "device connected", e);
   this.port = e.target;
   this.physicallyConnected = true;
 };
-navigator.serial.addEventListener('connect', onconnect);
+navigator.serial.addEventListener("connect", onconnect);
 
 // notification for a USB device getting physically disconnected
 const ondisconnect = (e) => {
-  console.log(id + ' disconnect');
+  console.log(id + " disconnect");
   this.physicallyConnected = false;
   this.open = false;
-}
-navigator.serial.addEventListener('disconnect', ondisconnect);
+};
+navigator.serial.addEventListener("disconnect", ondisconnect);
 
 function delay(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
@@ -103,7 +124,7 @@ async function UpdateSettingsFromDevice(settings) {
 }
 
 async function UpdateWifiStatusFromDevice(wifiStatus) {
-  $("#connectedToWifi").prop('checked', wifiStatus.is_connected);
+  $("#connectedToWifi").prop("checked", wifiStatus.is_connected);
   $("#AssignedIPAddress").val(wifiStatus.ifconfig[0]);
   $("#SubnetMask").val(wifiStatus.ifconfig[1]);
   $("#Gateway").val(wifiStatus.ifconfig[2]);
@@ -114,7 +135,7 @@ async function UpdateWifiStatusFromDevice(wifiStatus) {
 async function PushSettingsToDevice() {
   port = parseInt($("#Port").val()) || 8000;
   ip = $("#IPAddress").val();
-  if (!ValidateIPaddress(ip)){
+  if (!ValidateIPaddress(ip)) {
     M.toast({ html: "Could not push, Invalid IP" });
     return;
   }
