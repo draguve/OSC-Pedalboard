@@ -3,20 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <!-- Compiled and minified CSS -->
+    <title>PedalBoard</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
     />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <style>
       span.field-icon {
-          float: right;
-          position: absolute;
-          right: 10px;
-          top: 10px;
-          cursor: pointer;
-          z-index: 2;
+        float: right;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+        z-index: 2;
+      }
+      body {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1 0 auto;
       }
     </style>
 
@@ -24,154 +38,176 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   </head>
   <body>
-    <nav>
+    <nav class="purple lighten-2">
       <div class="nav-wrapper">
         <a href="#" class="brand-logo center">PedalBoard</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down"></ul>
       </div>
     </nav>
-    <div class="container">
-      <div class="divider" style="margin-bottom: 5em"></div>
-      <div class="row" id="NotSupported">
-        <h5>WebSerial is not supported</h5>
-      </div>
-      <div class="row" id="ConnectButton">
-        <button
-          class="btn waves-effect waves-light center-align"
-          type="submit"
-          name="action"
-          onclick="connectToPedal()"
-        >
-          Connect
-        </button>
-      </div>
-      <div class="row" id="ConnectForm">
-        <div class="col s12 m5">
-          <div class="row card Large">
-            <form
-              class="col s12"
-              style="margin-top: 2em"
-              onsubmit="return false;"
-            >
-              <div class="row">
-                <div class="input-field col s12">
-                  <input id="Wifi_SSID" type="text" class="validate" />
-                  <label for="Wifi_SSID">Wifi SSID</label>
+    <main>
+      <div class="container">
+        <div class="divider" style="margin-bottom: 5em"></div>
+        <div class="row" id="NotSupported">
+          <h5>WebSerial is not supported</h5>
+        </div>
+        <div class="row" id="ConnectButton">
+          <button
+            class="pink lighten-2 btn waves-effect waves-light center-align"
+            type="submit"
+            name="action"
+            onclick="connectToPedal()"
+          >
+            Connect
+          </button>
+        </div>
+        <div class="row" id="ConnectForm">
+          <div class="col s12 m5">
+            <div class="row card Large">
+              <form
+                class="col s12"
+                style="margin-top: 2em"
+                onsubmit="return false;"
+              >
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input id="Wifi_SSID" type="text" class="validate" />
+                    <label for="Wifi_SSID">Wifi SSID</label>
+                  </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="input-field col s12">
-                  <input id="password" type="password" class="validate" />
-                  <label for="password">Password</label>
-                  <span toggle="#password" class="field-icon toggle-password"><span class="material-icons">visibility</span></span>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input id="password" type="password" class="validate" />
+                    <label for="password">Password</label>
+                    <span toggle="#password" class="field-icon toggle-password"
+                      ><span class="material-icons">visibility</span></span
+                    >
+                  </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="input-field col s6">
-                  <input
-                    placeholder="X.X.X.X"
-                    id="IPAddress"
-                    type="text"
-                    class="validate"
-                  />
-                  <label for="IPAddress">OSC Server IP Address</label>
+                <div class="row">
+                  <div class="input-field col s6">
+                    <input
+                      placeholder="X.X.X.X"
+                      id="IPAddress"
+                      type="text"
+                      class="validate"
+                    />
+                    <label for="IPAddress">OSC Server IP Address</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input id="Port" type="text" class="validate" />
+                    <label for="Port">OSC Port</label>
+                  </div>
                 </div>
-                <div class="input-field col s6">
-                  <input id="Port" type="text" class="validate" />
-                  <label for="Port">OSC Port</label>
+                <div class="card-action">
+                  <button
+                    class="pink lighten-2 btn waves-effect waves-light"
+                    type="submit"
+                    name="action"
+                    onclick="GetSettingsFromDevice()"
+                  >
+                    Get Settings
+                  </button>
+                  <button
+                    class="pink lighten-2 btn waves-effect waves-light"
+                    type="submit"
+                    name="action"
+                    onclick="PushSettingsToDevice()"
+                  >
+                    Push Settings
+                  </button>
                 </div>
-              </div>
-              <div class="card-action">
-                <button
-                  class="btn waves-effect waves-light"
-                  type="submit"
-                  name="action"
-                  onclick="GetSettingsFromDevice()"
-                >
-                  Get Settings
-                </button>
-                <button
-                  class="btn waves-effect waves-light"
-                  type="submit"
-                  name="action"
-                  onclick="PushSettingsToDevice()"
-                >
-                  Push Settings
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
+          </div>
+          <div class="col s12 m5" style="margin-left: 2em">
+            <div class="row card Small" id="ConnectForm">
+              <form
+                class="col s12"
+                style="margin-top: 2em"
+                onsubmit="return false;"
+              >
+                <div class="row" style="margin-left: 2em">
+                  <p>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked="checked"
+                        disabled="disabled"
+                        id="connectedToWifi"
+                      />
+                      <span>Is Connected</span>
+                    </label>
+                  </p>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input
+                      disabled
+                      id="AssignedIPAddress"
+                      type="text"
+                      class="validate"
+                    />
+                    <label for="AssignedIPAddress">Device IP Address</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input
+                      disabled
+                      id="SubnetMask"
+                      type="text"
+                      class="validate"
+                    />
+                    <label for="SubnetMask">Subnet Mask</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input disabled id="Gateway" type="text" class="validate" />
+                    <label for="Gateway">Gateway</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input disabled id="DNS" type="text" class="validate" />
+                    <label for="DNS">DNS</label>
+                  </div>
+                </div>
+                <div class="card-action">
+                  <button
+                    class="pink lighten-2 btn waves-effect waves-light"
+                    type="submit"
+                    name="action"
+                    onclick="GetWifiStatusFromDevice()"
+                  >
+                    Update Wifi Status
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-        <div class="col s12 m5" style="margin-left: 2em">
-          <div class="row card Small" id="ConnectForm">
-            <form
-              class="col s12"
-              style="margin-top: 2em"
-              onsubmit="return false;"
-            >
-              <div class="row" style="margin-left: 2em">
-                <p>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked="checked"
-                      disabled="disabled"
-                      id="connectedToWifi"
-                    />
-                    <span>Is Connected</span>
-                  </label>
-                </p>
-              </div>
-              <div class="row">
-                <div class="input-field col s12">
-                  <input
-                    disabled
-                    id="AssignedIPAddress"
-                    type="text"
-                    class="validate"
-                  />
-                  <label for="AssignedIPAddress">Device IP Address</label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="input-field col s12">
-                  <input
-                    disabled
-                    id="SubnetMask"
-                    type="text"
-                    class="validate"
-                  />
-                  <label for="SubnetMask">Subnet Mask</label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="input-field col s12">
-                  <input disabled id="Gateway" type="text" class="validate" />
-                  <label for="Gateway">Gateway</label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="input-field col s12">
-                  <input disabled id="DNS" type="text" class="validate" />
-                  <label for="DNS">DNS</label>
-                </div>
-              </div>
-              <div class="card-action">
-                <button
-                  class="btn waves-effect waves-light"
-                  type="submit"
-                  name="action"
-                  onclick="GetWifiStatusFromDevice()"
-                >
-                  Update Wifi Status
-                </button>
-              </div>
-            </form>
-          </div>
+      </div>
+    </main>
+  </body>
+  <footer class="purple lighten-2 page-footer " style="padding-top: 0px">
+    <div class="footer-copyright">
+      <div class="container">
+        Made at the expense of @draguve's sanity
+        <div class="right">
+          <a href="https://github.com/draguve" title="Github"
+            ><i class="fa fa-github" style="color: white"></i
+          ></a>
+          <a href="https://www.instagram.com/draguve/" title="Instagram"
+            ><i class="fa fa-instagram" style="color: white"></i
+          ></a>
+          <a href="https://twitter.com/draguve" title="Twitter"
+            ><i class="fa fa-twitter" style="color: white"></i
+          ></a>
         </div>
       </div>
     </div>
-  </body>
+  </footer>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
   <script src="index.js"></script>
 </html>
