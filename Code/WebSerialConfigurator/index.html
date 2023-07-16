@@ -19,7 +19,7 @@
       </div>
     </nav>
     <div class="container">
-      <div class="divider" style="margin-bottom: 5em;"></div>
+      <div class="divider" style="margin-bottom: 5em"></div>
       <div class="row" id="NotSupported">
         <h5>WebSerial is not supported</h5>
       </div>
@@ -34,7 +34,7 @@
         </button>
       </div>
       <div class="row" id="ConnectForm">
-        <form class="col s12">
+        <form class="col s12" onsubmit="return false;">
           <div class="row">
             <div class="input-field col s12">
               <input id="Wifi_SSID" type="text" class="validate" />
@@ -60,6 +60,26 @@
             <div class="input-field col s6">
               <input id="Port" type="text" class="validate" />
               <label for="Port">Port</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s6">
+              <button
+                class="btn waves-effect waves-light"
+                type="submit"
+                name="action"
+                onclick="GetSettingsFromDevice()"
+              >
+                Get Settings
+              </button>
+              <button
+                class="btn waves-effect waves-light"
+                type="submit"
+                name="action"
+                onclick=""
+              >
+                Push Settings
+              </button>
             </div>
           </div>
         </form>
