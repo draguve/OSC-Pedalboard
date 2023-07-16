@@ -88,11 +88,26 @@ async function GetSettingsFromDevice() {
   M.toast({ html: "Updated Settings" });
 }
 
+async function GetWifiStatusFromDevice() {
+  var wifiStatus = await sendDataGetOutput(pedal_port, '{"getWifiStatus":1}');
+  UpdateWifiStatusFromDevice(wifiStatus);
+  M.toast({ html: "Updated Wifi Status" });
+}
+
 async function UpdateSettingsFromDevice(settings) {
   $("#Wifi_SSID").val(settings.ssid);
   $("#password").val(settings.password);
   $("#IPAddress").val(settings.OSC_Server);
   $("#Port").val(settings.OSC_Port);
+  M.updateTextFields();
+}
+
+async function UpdateWifiStatusFromDevice(wifiStatus) {
+  $("#connectedToWifi").prop('checked', wifiStatus.is_connected);
+  $("#AssignedIPAddress").val(wifiStatus.ifconfig[0]);
+  $("#SubnetMask").val(wifiStatus.ifconfig[1]);
+  $("#Gateway").val(wifiStatus.ifconfig[2]);
+  $("#DNS").val(wifiStatus.ifconfig[3]);
   M.updateTextFields();
 }
 
@@ -137,6 +152,8 @@ async function connectToPedal() {
     });
     monitor();
     var settings = await sendDataGetOutput(pedal_port, '{"getSettings":1}');
+    var wifiStatus = await sendDataGetOutput(pedal_port, '{"getWifiStatus":1}');
+    UpdateWifiStatusFromDevice(wifiStatus);
     if (!("password" in settings)) {
       M.toast({ html: "Could not connect to any device" });
       return;

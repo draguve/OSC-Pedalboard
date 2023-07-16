@@ -14,7 +14,7 @@
   <body>
     <nav>
       <div class="nav-wrapper">
-        <a href="#" class="brand-logo">PedalBoard</a>
+        <a href="#" class="brand-logo center">PedalBoard</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down"></ul>
       </div>
     </nav>
@@ -25,7 +25,7 @@
       </div>
       <div class="row" id="ConnectButton">
         <button
-          class="btn waves-effect waves-light"
+          class="btn waves-effect waves-light center-align"
           type="submit"
           name="action"
           onclick="connectToPedal()"
@@ -34,55 +34,128 @@
         </button>
       </div>
       <div class="row" id="ConnectForm">
-        <form class="col s12" onsubmit="return false;">
-          <div class="row">
-            <div class="input-field col s12">
-              <input id="Wifi_SSID" type="text" class="validate" />
-              <label for="Wifi_SSID">Wifi SSID</label>
-            </div>
+        <div class="col s12 m5">
+          <div class="row card Large">
+            <form
+              class="col s12"
+              style="margin-top: 2em"
+              onsubmit="return false;"
+            >
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="Wifi_SSID" type="text" class="validate" />
+                  <label for="Wifi_SSID">Wifi SSID</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="password" type="text" class="validate" />
+                  <label for="password">Password</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s6">
+                  <input
+                    placeholder="X.X.X.X"
+                    id="IPAddress"
+                    type="text"
+                    class="validate"
+                  />
+                  <label for="IPAddress">OSC Server IP Address</label>
+                </div>
+                <div class="input-field col s6">
+                  <input id="Port" type="text" class="validate" />
+                  <label for="Port">OSC Port</label>
+                </div>
+              </div>
+              <div class="card-action">
+                <button
+                  class="btn waves-effect waves-light"
+                  type="submit"
+                  name="action"
+                  onclick="GetSettingsFromDevice()"
+                >
+                  Get Settings
+                </button>
+                <button
+                  class="btn waves-effect waves-light"
+                  type="submit"
+                  name="action"
+                  onclick="PushSettingsToDevice()"
+                >
+                  Push Settings
+                </button>
+              </div>
+            </form>
           </div>
-          <div class="row">
-            <div class="input-field col s12">
-              <input id="password" type="text" class="validate" />
-              <label for="password">Password</label>
-            </div>
+        </div>
+        <div class="col s12 m5" style="margin-left: 2em">
+          <div class="row card Small" id="ConnectForm">
+            <form
+              class="col s12"
+              style="margin-top: 2em"
+              onsubmit="return false;"
+            >
+              <div class="row" style="margin-left: 2em">
+                <p>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked="checked"
+                      disabled="disabled"
+                      id="connectedToWifi"
+                    />
+                    <span>Is Connected</span>
+                  </label>
+                </p>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input
+                    disabled
+                    id="AssignedIPAddress"
+                    type="text"
+                    class="validate"
+                  />
+                  <label for="AssignedIPAddress">Device IP Address</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input
+                    disabled
+                    id="SubnetMask"
+                    type="text"
+                    class="validate"
+                  />
+                  <label for="SubnetMask">Subnet Mask</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input disabled id="Gateway" type="text" class="validate" />
+                  <label for="Gateway">Gateway</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input disabled id="DNS" type="text" class="validate" />
+                  <label for="DNS">DNS</label>
+                </div>
+              </div>
+              <div class="card-action">
+                <button
+                  class="btn waves-effect waves-light"
+                  type="submit"
+                  name="action"
+                  onclick="GetWifiStatusFromDevice()"
+                >
+                  Update Wifi Status
+                </button>
+              </div>
+            </form>
           </div>
-          <div class="row">
-            <div class="input-field col s6">
-              <input
-                placeholder="X.X.X.X"
-                id="IPAddress"
-                type="text"
-                class="validate"
-              />
-              <label for="IPAddress">IP Address</label>
-            </div>
-            <div class="input-field col s6">
-              <input id="Port" type="text" class="validate" />
-              <label for="Port">Port</label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s6">
-              <button
-                class="btn waves-effect waves-light"
-                type="submit"
-                name="action"
-                onclick="GetSettingsFromDevice()"
-              >
-                Get Settings
-              </button>
-              <button
-                class="btn waves-effect waves-light"
-                type="submit"
-                name="action"
-                onclick="PushSettingsToDevice()"
-              >
-                Push Settings
-              </button>
-            </div>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   </body>
