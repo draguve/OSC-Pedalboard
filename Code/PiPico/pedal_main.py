@@ -14,7 +14,6 @@ from uosc.client import Bundle, Client, create_message
 import select
 import sys
 import ujson
-
 from machine import Pin
 
 settings = {
@@ -22,7 +21,8 @@ settings = {
     "password" : 'pioneer123',
     "OSC_Server" : '192.168.80.176',
     "OSC_Port" : 8000,
-    "Verbose":False
+    "Verbose":False,
+    "ConnectionAnimationTime":5,
 }
 
 with open('settings.json') as data_file:
@@ -59,10 +59,10 @@ def ADCThread():
     stompButton2 = Pin(12, Pin.IN, Pin.PULL_DOWN)
 
     while(True):
-        adc_values[0] = chan_knob0.value
-        adc_values[1] = chan_knob1.value
-        adc_values[2] = chan_knob2.value
-        adc_values[3] = chan_knob3.value
+        adc_values[0] = chan_knob3.value
+        adc_values[1] = chan_knob2.value
+        adc_values[2] = chan_knob1.value
+        adc_values[3] = chan_knob0.value
         stomp_values[0] = stompButton1.value()
         stomp_values[1] = stompButton2.value()
                 
@@ -74,6 +74,15 @@ pixels = Neopixel(
     state_machine=0
 )
 pixels.brightness(40)
+
+def play_rainbow():
+    hue = 0
+    t_end = time.time() + settings["ConnectionAnimationTime"]
+    while time.time() < t_end:
+        color = pixels.colorHSV(hue, 255, 150)
+        pixels.fill(color)
+        pixels.show()
+        hue += 150
 
 def get_wifi_status(wlan):
     return ujson.dumps({
@@ -94,10 +103,11 @@ while True:
         if wlan.isconnected() == True and osc == None:
             print(get_wifi_status(wlan))
             osc = Client(settings["OSC_Server"], settings["OSC_Port"])
+            play_rainbow()
         isConnected = wlan.isconnected() == True and osc != None
         for i in range(len(adc_values)):
             t_value = clamp(adc_values[i]/adc_peak,0.0,1.0)
-            t_value = round(t_value,2)
+            t_value = 1-round(t_value,2)
             pixels.set_pixel(i,(lerp(0,255,t_value),0,0))
             if(t_value != last_values[i]):
                 if isConnected:
