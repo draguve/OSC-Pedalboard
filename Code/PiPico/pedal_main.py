@@ -23,6 +23,8 @@ settings = {
     "OSC_Port" : 8000,
     "Verbose":False,
     "ConnectionAnimationTime":5,
+    "Colors": [0,10000,20000,30000,40000,50000,60000],
+    "LedBrightness":20,
 }
 
 with open('settings.json') as data_file:
@@ -71,9 +73,9 @@ _thread.start_new_thread(ADCThread, ())
 pixels = Neopixel(
     pin=pixel_pin,
     num_leds=num_pixels,
-    state_machine=0
+    state_machine=0,
+    mode="GRB"
 )
-pixels.brightness(40)
 
 def play_rainbow():
     hue = 0
@@ -98,6 +100,8 @@ while True:
     wlan.connect(settings["ssid"], settings["password"])
     last_values = array.array("f",[0,0,0,0])
     last_stomp_values = array.array('i',[0,0])
+    colors = settings["Colors"]
+    pixels.brightness(settings["LedBrightness"])
 
     while True:
         if wlan.isconnected() == True and osc == None:
@@ -108,7 +112,8 @@ while True:
         for i in range(len(adc_values)):
             t_value = clamp(adc_values[i]/adc_peak,0.0,1.0)
             t_value = 1-round(t_value,2)
-            pixels.set_pixel(i,(lerp(0,255,t_value),0,0))
+            this_color = pixels.colorHSV(colors[i], 255, int(lerp(0,255,t_value)))
+            pixels.set_pixel(i,this_color)
             if(t_value != last_values[i]):
                 if isConnected:
                     osc.send(f"/controls/Pot{i}", t_value)
@@ -117,7 +122,8 @@ while True:
             last_values[i] = t_value
         for i in range(len(last_stomp_values)):
             t_value = stomp_values[i]
-            pixels.set_pixel(4+i,(0,t_value*255,0))
+            this_color = pixels.colorHSV(colors[4+i], 255, int(t_value*255))
+            pixels.set_pixel(4+i,this_color)
             if(t_value != last_stomp_values[i]):
                 if isConnected:
                     osc.send(f"/controls/Stomp{i}", float(t_value))
