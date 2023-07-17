@@ -120,6 +120,9 @@ async function UpdateSettingsFromDevice(settings) {
   $("#password").val(settings.password);
   $("#IPAddress").val(settings.OSC_Server);
   $("#Port").val(settings.OSC_Port);
+  $("#ConnectionAnimationTime").val(settings.ConnectionAnimationTime);
+  $("#LedBrightness").val(settings.LedBrightness);
+  await UpdateColorsFromDevice(settings);
   M.updateTextFields();
 }
 
@@ -139,16 +142,59 @@ async function PushSettingsToDevice() {
     M.toast({ html: "Could not push, Invalid IP" });
     return;
   }
+  connectionAnimationTime = parseInt($("#ConnectionAnimationTime").val()) || 2;
+  ledBrightness = parseInt($("#LedBrightness").val()) || 25;
   data = {
     ssid: $("#Wifi_SSID").val(),
     OSC_Server: ip,
     password: $("#password").val(),
     OSC_Port: port,
+    LedBrightness:ledBrightness,
+    ConnectionAnimationTime:connectionAnimationTime
   };
   settingsToPush = JSON.stringify(data);
+  console.log(data);
   await sendData(pedal_port, settingsToPush);
   M.toast({ html: "Settings pushed to device" });
 }
+
+function lerp (start, end, amt){
+  return (1-amt)*start+amt*end;
+}
+
+function toHue(value){
+  return Math.round(lerp(0,65535,value/300));
+}
+
+function toSlider(value){
+  return Math.round(lerp(0,300,value/65535));
+}
+
+async function PushColors() {
+  var data = [0,0,0,0,0,0];
+  data[0] = toHue(parseInt($("#Knob1").find("input").val()));
+  data[1] = toHue(parseInt($("#Knob2").find("input").val()));
+  data[2] = toHue(parseInt($("#Knob3").find("input").val()));
+  data[3] = toHue(parseInt($("#Knob4").find("input").val()));
+  data[4] = toHue(parseInt($("#Push1").find("input").val()));
+  data[5] = toHue(parseInt($("#Push2").find("input").val()));
+  toSend = {
+    "Colors":data
+  };
+  await sendData(pedal_port, JSON.stringify(toSend));
+  M.toast({ html: "Colors pushed to device" });
+}
+
+async function UpdateColorsFromDevice(settings) {
+  colors = settings["Colors"];
+  $("#Knob1").find("input").val(toSlider(colors[0]));
+  $("#Knob2").find("input").val(toSlider(colors[1]));
+  $("#Knob3").find("input").val(toSlider(colors[2]));
+  $("#Knob4").find("input").val(toSlider(colors[3]));
+  $("#Push1").find("input").val(toSlider(colors[4]));
+  $("#Push2").find("input").val(toSlider(colors[5]));
+}
+
 
 function ValidateIPaddress(ipaddress) {
   if (
