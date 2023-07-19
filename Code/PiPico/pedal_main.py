@@ -61,10 +61,10 @@ def ADCThread():
     stompButton2 = Pin(12, Pin.IN, Pin.PULL_DOWN)
 
     while(True):
-        adc_values[0] = chan_knob3.value
-        adc_values[1] = chan_knob2.value
-        adc_values[2] = chan_knob1.value
-        adc_values[3] = chan_knob0.value
+        adc_values[0] = chan_knob0.value
+        adc_values[1] = chan_knob1.value
+        adc_values[2] = chan_knob2.value
+        adc_values[3] = chan_knob3.value
         stomp_values[0] = stompButton1.value()
         stomp_values[1] = stompButton2.value()
                 
