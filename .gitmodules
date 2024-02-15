@@ -1,0 +1,3 @@
+[submodule "Code/Midi/Libs/tinyosc"]
+	path = Code/Midi/Libs/tinyosc
+	url = https://github.com/draguve/tinyosc.git
