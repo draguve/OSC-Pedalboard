@@ -9,9 +9,12 @@ project(PedalBoard C CXX ASM)
 
 pico_sdk_init()
 
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/pico-ads1115/lib)
+
 
 add_executable(${NAME}
         main.c
+        PedalHw/input.c
 
         # tiny osc
         libs/tinyosc/tinyosc.c
@@ -27,6 +30,7 @@ target_link_libraries(${NAME}
         pico_cyw43_arch_lwip_threadsafe_background
         pico_stdlib
         pico_unique_id
+        pico-ads1115
 #        tinyusb_device
 #        tinyusb_board
 )
