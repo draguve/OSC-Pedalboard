@@ -1,13 +1,11 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include <string.h>
-#include <stdlib.h>
 #include "pico/cyw43_arch.h"
 #include "lwip/pbuf.h"
 #include "lwip/udp.h"
-#include <PedalHw/input.h>
+#include "PedalHw/iohandler.h"
 #include <pico/unique_id.h>
-#include <tusb.h>
 
 #define UDP_PORT 4444
 #define BEACON_MSG_LEN_MAX 127
@@ -43,7 +41,7 @@ void run_udp_beacon() {
 int main() {
     stdio_init_all();
 //    while(!tud_cdc_connected()) sleep_ms(250);
-    pedal_input_init();
+    iohandler_init();
 
     char uname[40];
     char wifiname[40];
@@ -69,7 +67,7 @@ int main() {
     float volts[4] = {0, 0, 0, 0};
     bool stomps[2] = {false,false};
     while (true) {
-        pedal_get_current_state(volts,stomps);
+        iohandler_get_current_state(volts,stomps);
         printf("%d %d A:%f B:%f C:%f D:%f\n",stomps[0],stomps[1],volts[0],volts[1],volts[2],volts[3]);
         busy_wait_ms(1000);
     }

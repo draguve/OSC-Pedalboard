@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(NAME PedalBoard)
 set(PICO_BOARD pico_w)
 
@@ -7,14 +9,18 @@ include(pico_sdk_import.cmake)
 
 project(PedalBoard C CXX ASM)
 
+set(PICO_CXX_ENABLE_EXCEPTIONS 1)
+
 pico_sdk_init()
+
+include(Libs/PicoLed/PicoLed.cmake)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/pico-ads1115/lib)
 
-
 add_executable(${NAME}
-        main.c
+        main.cpp
         PedalHw/input.c
+        PedalHw/iohandler.cpp
 
         # tiny osc
         libs/tinyosc/tinyosc.c
@@ -36,8 +42,9 @@ target_link_libraries(${NAME}
         pico_stdlib
         pico_unique_id
         pico-ads1115
-#        tinyusb_device
-#        tinyusb_board
+        PicoLed
+        #        tinyusb_device
+        #        tinyusb_board
 )
 
 pico_enable_stdio_usb(${NAME} 1)

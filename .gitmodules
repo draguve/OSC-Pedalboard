@@ -4,3 +4,6 @@
 [submodule "Code/Midi/Libs/pico-ads1115"]
 	path = Code/Midi/Libs/pico-ads1115
 	url = https://github.com/pmj/pico-ads1115.git
+[submodule "Code/Midi/Libs/PicoLED"]
+	path = Code/Midi/Libs/PicoLED
+	url = https://github.com/ForsakenNGS/PicoLED.git
