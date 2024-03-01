@@ -6,11 +6,14 @@
 #include "lwip/pbuf.h"
 #include "lwip/udp.h"
 #include <PedalHw/input.h>
+#include <pico/unique_id.h>
+#include <tusb.h>
 
 #define UDP_PORT 4444
 #define BEACON_MSG_LEN_MAX 127
 #define BEACON_TARGET "255.255.255.255"
 #define BEACON_INTERVAL_MS 1000
+
 
 void run_udp_beacon() {
     struct udp_pcb *pcb = udp_new();
@@ -39,8 +42,13 @@ void run_udp_beacon() {
 
 int main() {
     stdio_init_all();
-
+//    while(!tud_cdc_connected()) sleep_ms(250);
     pedal_input_init();
+
+    char uname[40];
+    char wifiname[40];
+    pico_get_unique_board_id_string(uname,10);
+    sprintf(wifiname,"Pedal %s",uname);
 
     if (cyw43_arch_init()) {
         printf("failed to initialise\n");
@@ -51,8 +59,9 @@ int main() {
 
     printf("Connecting to Wi-Fi...\n");
     if (cyw43_arch_wifi_connect_timeout_ms("Draguve4", "pioneer123", CYW43_AUTH_WPA2_AES_PSK, 30000)) {
-        printf("failed to connect.\n");
-        return 1;
+        printf("failed to connect. starting ap mode\n");
+        cyw43_arch_disable_sta_mode();
+        cyw43_arch_enable_ap_mode(wifiname,uname,CYW43_AUTH_WPA2_AES_PSK);
     } else {
         printf("Connected.\n");
     }

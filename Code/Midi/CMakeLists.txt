@@ -20,6 +20,11 @@ add_executable(${NAME}
         libs/tinyosc/tinyosc.c
 )
 
+# https://forums.raspberrypi.com/viewtopic.php?p=1958230#p1958230
+target_compile_definitions(${NAME} PUBLIC
+        PICO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS=1000
+)
+
 target_include_directories(${NAME} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
         ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts
