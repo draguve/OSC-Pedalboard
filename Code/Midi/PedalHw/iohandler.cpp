@@ -8,19 +8,46 @@ extern "C"{
 }
 
 #define LED_PIO pio0
-#define LED_PIN 10
+#define LED_PIN 3
 #define LED_LENGTH 6
 #define LED_STATE_MACHINE 0
 
+#define ASSUMED_MIN 500
+#define ASSUMED_MAX 26000
+#define MAX_DELTA 50
+
+uint8_t colors[6] = {0, 51, 102, 153, 204, 255};
+PicoLed::Color led_colors[6];
+PicoLed::PicoLedController ledStrip = PicoLed::addLeds<PicoLed::WS2812B>(LED_PIO, LED_STATE_MACHINE, LED_PIN, LED_LENGTH, PicoLed::FORMAT_RGB);
+
+float InverseLerp(float xx, float yy, float value)
+{
+    return std::clamp((value - xx)/(yy - xx),0.0f,1.0f);
+}
 
 int iohandler_init(){
-    auto ledStrip = PicoLed::addLeds<PicoLed::WS2812B>(LED_PIO, LED_STATE_MACHINE, LED_PIN, LED_LENGTH, PicoLed::FORMAT_RGB);
     pedal_input_init();
     return 0;
 }
 
+uint16_t data[4] = {0,0,0,0};
+uint16_t min_data[4] = {ASSUMED_MIN,ASSUMED_MIN,ASSUMED_MIN,ASSUMED_MIN};
+uint16_t max_data[4] = {ASSUMED_MAX,ASSUMED_MAX,ASSUMED_MAX,ASSUMED_MAX};
 int iohandler_get_current_state(float* volts,bool* stomps){
-    pedal_get_current_state(volts,stomps);
+    pedal_get_current_state(data,stomps);
+    for(int i=0;i<4;i++){
+        min_data[i] = MIN(min_data[i],data[i]+MAX_DELTA);
+        max_data[i] = MAX(max_data[i],data[i]-MAX_DELTA);
+        volts[i] = InverseLerp(max_data[i],min_data[i],data[i]);
+        led_colors[i] = PicoLed::HSV(colors[i],255,(u_int8_t)std::lerp(0,255,volts[i]));
+        ledStrip.setPixelColor(i,led_colors[i]);
+    }
+    for(int i=0;i<2;i++){
+        led_colors[i+4] = PicoLed::HSV(colors[i],255,(u_int8_t)stomps[i]*255);
+        ledStrip.setPixelColor(i+4,led_colors[i+4]);
+    }
+    printf("%d %d %d %d",data[0],data[1],data[2],data[3]);
+    ledStrip.show();
     return 0;
 }
 

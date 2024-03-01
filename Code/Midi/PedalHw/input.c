@@ -56,15 +56,15 @@ uint16_t adc_value1;
 uint16_t adc_value2;
 uint16_t adc_value3;
 
-int pedal_get_current_state(float* volts,bool* stomps){
+int pedal_get_current_state(uint16_t* volts,bool* stomps){
     ads1115_read_adc(&adc_value, &adc0);
-    volts[0] = ads1115_raw_to_volts(adc_value,&adc0);
+    volts[0] = adc_value;
     ads1115_read_adc(&adc_value1, &adc1);
-    volts[1] = ads1115_raw_to_volts(adc_value1,&adc1);
+    volts[1] = adc_value1;
     ads1115_read_adc(&adc_value2, &adc2);
-    volts[2] = ads1115_raw_to_volts(adc_value2,&adc2);
+    volts[2] = adc_value2;
     ads1115_read_adc(&adc_value3, &adc3);
-    volts[3] = ads1115_raw_to_volts(adc_value3,&adc3);
-    stomps[0] = gpio_get(stomp0Pin);
-    stomps[1] = gpio_get(stomp1Pin);
+    volts[3] = adc_value3;
+    stomps[0] = gpio_get(stomp1Pin);
+    stomps[1] = gpio_get(stomp0Pin);
 }
