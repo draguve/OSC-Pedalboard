@@ -39,6 +39,7 @@ void run_udp_beacon() {
 
 int main() {
     stdio_init_all();
+
     pedal_input_init();
 
     if (cyw43_arch_init()) {
@@ -59,7 +60,8 @@ int main() {
     float volts[4] = {0, 0, 0, 0};
     while (true) {
         pedal_get_current_state(volts);
-        printf("A:%f B:%f C:%f D:%f",volts[0],volts[1],volts[2],volts[3]);
+        printf("A:%f B:%f C:%f D:%f\n",volts[0],volts[1],volts[2],volts[3]);
+        busy_wait_ms(1000);
     }
 
 //    run_udp_beacon();

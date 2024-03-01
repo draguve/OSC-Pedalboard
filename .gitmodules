@@ -3,4 +3,4 @@
 	url = https://github.com/draguve/tinyosc.git
 [submodule "Code/Midi/Libs/pico-ads1115"]
 	path = Code/Midi/Libs/pico-ads1115
-	url = https://github.com/antgon/pico-ads1115.git
+	url = https://github.com/pmj/pico-ads1115.git

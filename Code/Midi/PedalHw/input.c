@@ -5,15 +5,27 @@
 #include "input.h"
 #include "pico/stdlib.h"
 #include <ads1115.h>
+#include <stdio.h>
 
 #define I2C_PORT i2c1
 #define I2C_FREQ 400000
-#define ADS1115_I2C_ADDR 0x48
+#define ADS1115_I2C_ADDR 0x49
 const uint8_t SDA_PIN = 18;
 const uint8_t SCL_PIN = 19;
 
 struct ads1115_adc adc0;
-uint16_t singleShotAdc[4] = {ADS1115_MUX_SINGLE_0,ADS1115_MUX_SINGLE_1,ADS1115_MUX_SINGLE_2,ADS1115_MUX_SINGLE_3};
+struct ads1115_adc adc1;
+struct ads1115_adc adc2;
+struct ads1115_adc adc3;
+
+void setup_adc(enum ads1115_mux_t mux, ads1115_adc_t *adc){
+    ads1115_init(I2C_PORT, ADS1115_I2C_ADDR, adc);
+    ads1115_set_input_mux(mux, adc);
+    ads1115_set_pga(ADS1115_PGA_4_096,adc);
+    ads1115_set_data_rate(ADS1115_RATE_860_SPS, adc);
+    ads1115_set_operating_mode(ADS1115_MODE_SINGLE_SHOT,adc);
+    ads1115_write_config(adc,true);
+}
 
 int pedal_input_init(){
     // Initialise I2C
@@ -24,21 +36,25 @@ int pedal_input_init(){
     gpio_pull_up(SCL_PIN);
 
     // Initialise ADC
-    ads1115_init(I2C_PORT, ADS1115_I2C_ADDR, &adc0);
-    ads1115_set_input_mux(ADS1115_MUX_SINGLE_0, &adc0);
-    ads1115_set_data_rate(ADS1115_RATE_860_SPS, &adc0);
-    ads1115_set_operating_mode(ADS1115_MODE_SINGLE_SHOT,&adc0);
-    ads1115_write_config(&adc0);
-
+    setup_adc(ADS1115_MUX_SINGLE_0,&adc0);
+    setup_adc(ADS1115_MUX_SINGLE_1,&adc1);
+    setup_adc(ADS1115_MUX_SINGLE_2,&adc2);
+    setup_adc(ADS1115_MUX_SINGLE_3,&adc3);
     return 0;
 }
 
 uint16_t adc_value;
+uint16_t adc_value1;
+uint16_t adc_value2;
+uint16_t adc_value3;
+
 int pedal_get_current_state(float* volts){
-    for(int i=0;i<4;i++){
-        ads1115_set_input_mux(singleShotAdc[i],&adc0);
-        ads1115_read_adc(&adc_value, &adc0);
-        volts[i] = ads1115_raw_to_volts(adc_value,&adc0);
-    }
-    return 0;
+    ads1115_read_adc(&adc_value, &adc0);
+    volts[0] = ads1115_raw_to_volts(adc_value,&adc0);
+    ads1115_read_adc(&adc_value1, &adc1);
+    volts[1] = ads1115_raw_to_volts(adc_value,&adc1);
+    ads1115_read_adc(&adc_value2, &adc2);
+    volts[2] = ads1115_raw_to_volts(adc_value2,&adc2);
+    ads1115_read_adc(&adc_value3, &adc3);
+    volts[3] = ads1115_raw_to_volts(adc_value3,&adc3);
 }
