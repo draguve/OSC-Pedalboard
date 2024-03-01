@@ -7,6 +7,9 @@
 #include <ads1115.h>
 #include <stdio.h>
 
+#define stomp0Pin 12
+#define stomp1Pin 11
+
 #define I2C_PORT i2c1
 #define I2C_FREQ 400000
 #define ADS1115_I2C_ADDR 0x49
@@ -35,6 +38,11 @@ int pedal_input_init(){
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
 
+    gpio_init(stomp0Pin);
+    gpio_init(stomp1Pin);
+    gpio_set_dir(stomp0Pin,GPIO_IN);
+    gpio_set_dir(stomp1Pin,GPIO_IN);
+
     // Initialise ADC
     setup_adc(ADS1115_MUX_SINGLE_0,&adc0);
     setup_adc(ADS1115_MUX_SINGLE_1,&adc1);
@@ -48,13 +56,15 @@ uint16_t adc_value1;
 uint16_t adc_value2;
 uint16_t adc_value3;
 
-int pedal_get_current_state(float* volts){
+int pedal_get_current_state(float* volts,bool* stomps){
     ads1115_read_adc(&adc_value, &adc0);
     volts[0] = ads1115_raw_to_volts(adc_value,&adc0);
     ads1115_read_adc(&adc_value1, &adc1);
-    volts[1] = ads1115_raw_to_volts(adc_value,&adc1);
+    volts[1] = ads1115_raw_to_volts(adc_value1,&adc1);
     ads1115_read_adc(&adc_value2, &adc2);
     volts[2] = ads1115_raw_to_volts(adc_value2,&adc2);
     ads1115_read_adc(&adc_value3, &adc3);
     volts[3] = ads1115_raw_to_volts(adc_value3,&adc3);
+    stomps[0] = gpio_get(stomp0Pin);
+    stomps[1] = gpio_get(stomp1Pin);
 }

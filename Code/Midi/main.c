@@ -67,9 +67,10 @@ int main() {
     }
 
     float volts[4] = {0, 0, 0, 0};
+    bool stomps[2] = {false,false};
     while (true) {
-        pedal_get_current_state(volts);
-        printf("A:%f B:%f C:%f D:%f\n",volts[0],volts[1],volts[2],volts[3]);
+        pedal_get_current_state(volts,stomps);
+        printf("%d %d A:%f B:%f C:%f D:%f\n",stomps[0],stomps[1],volts[0],volts[1],volts[2],volts[3]);
         busy_wait_ms(1000);
     }
 

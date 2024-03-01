@@ -7,16 +7,7 @@
 
 #include <stdbool.h>
 
-struct pedalState {
-    float adc0;
-    float adc1;
-    float adc2;
-    float adc3;
-    bool stomp0;
-    bool stomp1;
-};
-
 int pedal_input_init();
-int pedal_get_current_state(float* volts);
+int pedal_get_current_state(float* volts,bool* stomps);
 
 #endif //PEDALBOARD_INPUT_H
