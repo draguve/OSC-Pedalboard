@@ -6,6 +6,7 @@
 #include "lwip/udp.h"
 #include "PedalHw/iohandler.h"
 #include <pico/unique_id.h>
+#include <device/usbd.h>
 #include "pico/multicore.h"
 
 #define UDP_PORT 4444
@@ -47,10 +48,12 @@ void core1_main(){
         iohandler_get_current_state(volts,stomps);
         printf("%d %d A:%f B:%f C:%f D:%f\n",stomps[0],stomps[1],volts[0],volts[1],volts[2],volts[3]);
         busy_wait_ms(10);
+        tud_task();
     }
 }
 
 int main() {
+    tud_init(BOARD_TUD_RHPORT);
     stdio_init_all();
 
     multicore_launch_core1(core1_main);
@@ -77,6 +80,7 @@ int main() {
     }
 
     while(true){
+//        tud_task();
         sleep_ms(100);
     }
 
