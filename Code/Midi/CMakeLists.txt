@@ -25,6 +25,11 @@ add_executable(${NAME}
         # tiny osc
         libs/tinyosc/tinyosc.c
         tusb_config.h
+        #servers
+        dhcpserver/dhcpserver.c
+        dhcpserver/dhcpserver.h
+        dnsserver/dnsserver.c
+        dnsserver/dnsserver.h
 )
 
 # https://forums.raspberrypi.com/viewtopic.php?p=1958230#p1958230
