@@ -25,6 +25,14 @@ float InverseLerp(float xx, float yy, float value)
     return std::clamp((value - xx)/(yy - xx),0.0f,1.0f);
 }
 
+uint16_t sat_subu16b(uint16_t x, uint16_t y)
+{
+    uint16_t res = x - y;
+    res &= -(res <= x);
+
+    return res;
+}
+
 int iohandler_init(){
     pedal_input_init();
     return 0;
@@ -37,7 +45,7 @@ int iohandler_get_current_state(float* volts,bool* stomps){
     pedal_get_current_state(data,stomps);
     for(int i=0;i<4;i++){
         min_data[i] = MIN(min_data[i],data[i]+MAX_DELTA);
-        max_data[i] = MAX(max_data[i],data[i]-MAX_DELTA);
+        max_data[i] = MAX(max_data[i],sat_subu16b(data[i],MAX_DELTA));
         volts[i] = InverseLerp(max_data[i],min_data[i],data[i]);
         led_colors[i] = PicoLed::HSV(colors[i],255,(u_int8_t)std::lerp(0,255,volts[i]));
         ledStrip.setPixelColor(i,led_colors[i]);
@@ -46,7 +54,6 @@ int iohandler_get_current_state(float* volts,bool* stomps){
         led_colors[i+4] = PicoLed::HSV(colors[i],255,(u_int8_t)stomps[i]*255);
         ledStrip.setPixelColor(i+4,led_colors[i+4]);
     }
-    printf("%d %d %d %d",data[0],data[1],data[2],data[3]);
     ledStrip.show();
     return 0;
 }
