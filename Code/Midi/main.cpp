@@ -6,6 +6,7 @@
 #include "lwip/udp.h"
 #include "PedalHw/iohandler.h"
 #include <pico/unique_id.h>
+#include "pico/multicore.h"
 
 #define UDP_PORT 4444
 #define BEACON_MSG_LEN_MAX 127
@@ -38,10 +39,21 @@ void run_udp_beacon() {
     }
 }
 
+void core1_main(){
+    iohandler_init();
+    float volts[4] = {0, 0, 0, 0};
+    bool stomps[2] = {false,false};
+    while (true) {
+        iohandler_get_current_state(volts,stomps);
+        printf("%d %d A:%f B:%f C:%f D:%f\n",stomps[0],stomps[1],volts[0],volts[1],volts[2],volts[3]);
+        busy_wait_ms(10);
+    }
+}
+
 int main() {
     stdio_init_all();
-//    while(!tud_cdc_connected()) sleep_ms(250);
-    iohandler_init();
+
+    multicore_launch_core1(core1_main);
 
     char uname[40];
     char wifiname[40];
@@ -64,12 +76,8 @@ int main() {
         printf("Connected.\n");
     }
 
-    float volts[4] = {0, 0, 0, 0};
-    bool stomps[2] = {false,false};
-    while (true) {
-        iohandler_get_current_state(volts,stomps);
-        printf("%d %d A:%f B:%f C:%f D:%f\n",stomps[0],stomps[1],volts[0],volts[1],volts[2],volts[3]);
-        busy_wait_ms(1000);
+    while(true){
+        sleep_ms(100);
     }
 
 //    run_udp_beacon();

@@ -51,7 +51,11 @@ int iohandler_get_current_state(float* volts,bool* stomps){
     return 0;
 }
 
-int iohandler_update_colors(){
+int iohandler_update_colors(uint8_t* newColors,u_int8_t brightness){
+    for (int i = 0; i < 6; i++) {
+        colors[i] = newColors[i];
+    }
+    ledStrip.setBrightness(brightness);
     return 0;
 }
 

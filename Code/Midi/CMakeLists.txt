@@ -42,6 +42,7 @@ target_link_libraries(${NAME}
         pico_stdlib
         pico_unique_id
         pico-ads1115
+        pico_multicore
         PicoLed
         #        tinyusb_device
         #        tinyusb_board
