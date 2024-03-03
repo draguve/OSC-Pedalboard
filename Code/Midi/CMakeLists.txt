@@ -30,6 +30,8 @@ add_executable(${NAME}
         dhcpserver/dhcpserver.h
         dnsserver/dnsserver.c
         dnsserver/dnsserver.h
+        PedalHw/midi_handler.cpp
+        Utils/float_compare.cpp
 )
 
 # https://forums.raspberrypi.com/viewtopic.php?p=1958230#p1958230
