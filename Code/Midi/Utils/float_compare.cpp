@@ -11,6 +11,14 @@ bool compare_float(float x, float y, float epsilon){
     return false; //they are not same
 }
 
+float round_to_precision(
+        float x,
+        int num_decimal_precision_digits)
+{
+    float power_of_10 = std::pow(10, num_decimal_precision_digits);
+    return std::round(x * power_of_10)  / power_of_10;
+}
+
 void is_changed(
         float* current_pots,float* next_pots,float epsilon,bool* changed_pots,
         bool* current_stomps,bool* next_stomps,bool* changed_stomps

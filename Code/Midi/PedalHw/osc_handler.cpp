@@ -7,6 +7,8 @@
 #include "pico/time.h"
 #include "string"
 #include "lwip/udp.h"
+#include "Utils/float_compare.h"
+#include "pedal_settings.h"
 
 #define MAX_BUFF_LEN 512
 
@@ -41,7 +43,12 @@ void osc_task(float *pots, bool *stomp, bool *changedPots, bool *changedStomps) 
     tosc_writeBundle(&bundle, timetag, buffer, sizeof(buffer));
     for (uint8_t i = 0; i < 4; i++) {
         if (changedPots[i]) {
-            tosc_writeNextMessage(&bundle, addresses_pots[i].c_str(), "f", pots[i]);
+            tosc_writeNextMessage(
+                &bundle,
+                addresses_pots[i].c_str(),
+                "f",
+                round_to_precision(pots[i],OSC_PRECISION)
+            );
             isEmpty = false;
         }
     }

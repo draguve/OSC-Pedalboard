@@ -1,0 +1,12 @@
+//
+// Created by ritwi on 3/3/2024.
+//
+
+#ifndef PEDALBOARD_PEDAL_SETTINGS_H
+#define PEDALBOARD_PEDAL_SETTINGS_H
+
+#define MIDI_EPSILON (1.0f/127.0f)
+#define OSC_EPSILON (0.01)
+#define OSC_PRECISION 2
+
+#endif //PEDALBOARD_PEDAL_SETTINGS_H

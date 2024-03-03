@@ -1,6 +1,6 @@
-#include <stdio.h>
+#include <cstdio>
 #include "pico/stdlib.h"
-#include <string.h>
+#include <cstring>
 #include "pico/cyw43_arch.h"
 #include "lwip/pbuf.h"
 #include "lwip/udp.h"
@@ -13,6 +13,7 @@
 #include "Utils/float_compare.h"
 #include "PedalHw/midi_handler.h"
 #include "PedalHw/osc_handler.h"
+#include "pedal_settings.h"
 
 extern "C"{
     #include "dhcpserver/dhcpserver.h"
@@ -24,8 +25,6 @@ extern "C"{
 #define BEACON_MSG_LEN_MAX 127
 #define BEACON_TARGET "255.255.255.255"
 #define BEACON_INTERVAL_MS 1000
-
-#define MIDI_EPSILON (1.0f/127.0f)
 
 float current_volts[4] = {0, 0, 0, 0};
 bool current_stomps[2] = {false,false};
@@ -46,11 +45,10 @@ void core1_main(){
     osc_init();
     while (true) {
         iohandler_get_current_state(next_volts_ptr,next_stomps_ptr);
-//        printf("%d %d A:%f B:%f C:%f D:%f\n",stomps[0],stomps[1],volts[0],volts[1],volts[2],volts[3]);
         is_changed(current_volts_ptr,next_volts_ptr,MIDI_EPSILON,midi_changed_pots,current_stomps_ptr,next_stomps_ptr,midi_changed_stomps);
         midi_task(next_volts_ptr,next_stomps_ptr,midi_changed_pots,midi_changed_stomps);
         if(is_connected){
-            is_changed(current_volts_ptr,next_volts_ptr,0.001,midi_changed_pots,current_stomps_ptr,next_stomps_ptr,midi_changed_stomps);
+            is_changed(current_volts_ptr,next_volts_ptr,OSC_EPSILON,midi_changed_pots,current_stomps_ptr,next_stomps_ptr,midi_changed_stomps);
             osc_task(next_volts_ptr,next_stomps_ptr,midi_changed_pots,midi_changed_stomps);
         }
         std::swap(current_volts_ptr,next_volts_ptr);
