@@ -12,6 +12,7 @@
 #include "bsp/board.h"
 #include "Utils/float_compare.h"
 #include "PedalHw/midi_handler.h"
+#include "PedalHw/osc_handler.h"
 
 extern "C"{
     #include "dhcpserver/dhcpserver.h"
@@ -26,36 +27,10 @@ extern "C"{
 
 #define MIDI_EPSILON (1.0f/127.0f)
 
-void run_udp_beacon() {
-    struct udp_pcb *pcb = udp_new();
-
-    ip_addr_t addr;
-    ipaddr_aton(BEACON_TARGET, &addr);
-
-    int counter = 0;
-    while (true) {
-        struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, BEACON_MSG_LEN_MAX + 1, PBUF_RAM);
-        char *req = (char *) p->payload;
-        memset(req, 0, BEACON_MSG_LEN_MAX + 1);
-        snprintf(req, BEACON_MSG_LEN_MAX, "%d\n", counter);
-        err_t er = udp_sendto(pcb, p, &addr, UDP_PORT);
-        pbuf_free(p);
-        if (er != ERR_OK) {
-            printf("Failed to send UDP packet! error=%d", er);
-        } else {
-            printf("Sent packet %d\n", counter);
-            counter++;
-        }
-
-        sleep_ms(BEACON_INTERVAL_MS);
-    }
-}
-
 float current_volts[4] = {0, 0, 0, 0};
 bool current_stomps[2] = {false,false};
 float next_volts[4] =  {0, 0, 0, 0};
 bool next_stomps[2] = {false,false};
-
 
 float* current_volts_ptr = current_volts;
 bool* current_stomps_ptr = current_stomps;
@@ -65,13 +40,19 @@ bool* next_stomps_ptr = next_stomps;
 bool midi_changed_pots[4] = {false,false,false,false};
 bool midi_changed_stomps[2] = {false,false};
 
+bool is_connected = false;
 void core1_main(){
     iohandler_init();
+    osc_init();
     while (true) {
         iohandler_get_current_state(next_volts_ptr,next_stomps_ptr);
 //        printf("%d %d A:%f B:%f C:%f D:%f\n",stomps[0],stomps[1],volts[0],volts[1],volts[2],volts[3]);
         is_changed(current_volts_ptr,next_volts_ptr,MIDI_EPSILON,midi_changed_pots,current_stomps_ptr,next_stomps_ptr,midi_changed_stomps);
         midi_task(next_volts_ptr,next_stomps_ptr,midi_changed_pots,midi_changed_stomps);
+        if(is_connected){
+            is_changed(current_volts_ptr,next_volts_ptr,0.001,midi_changed_pots,current_stomps_ptr,next_stomps_ptr,midi_changed_stomps);
+            osc_task(next_volts_ptr,next_stomps_ptr,midi_changed_pots,midi_changed_stomps);
+        }
         std::swap(current_volts_ptr,next_volts_ptr);
         std::swap(current_stomps_ptr,next_stomps_ptr);
     }
@@ -106,7 +87,7 @@ int main(void)
     sprintf(wifiname,"Pedal %s",uname);
     cyw43_arch_enable_sta_mode();
     printf("Connecting to Wi-Fi...\n");
-    if (cyw43_arch_wifi_connect_timeout_ms("Draguve4", "pioneer123", CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+    if (cyw43_arch_wifi_connect_timeout_ms("Draguve4", "pioneer123", CYW43_AUTH_WPA2_MIXED_PSK, 30000)) {
         printf("failed to connect. starting ap mode\n");
         cyw43_arch_disable_sta_mode();
         cyw43_arch_enable_ap_mode(wifiname,uname,CYW43_AUTH_WPA2_AES_PSK);
@@ -127,6 +108,7 @@ int main(void)
     } else {
         printf("Connected.\n");
     }
+    is_connected = true;
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
     while(true){
         sleep_ms(100);

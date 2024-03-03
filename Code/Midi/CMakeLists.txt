@@ -32,6 +32,7 @@ add_executable(${NAME}
         dnsserver/dnsserver.h
         PedalHw/midi_handler.cpp
         Utils/float_compare.cpp
+        PedalHw/osc_handler.cpp
 )
 
 # https://forums.raspberrypi.com/viewtopic.php?p=1958230#p1958230

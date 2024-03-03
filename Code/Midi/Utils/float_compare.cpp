@@ -16,7 +16,7 @@ void is_changed(
         bool* current_stomps,bool* next_stomps,bool* changed_stomps
         ){
     for(int i=0;i<4;i++){
-        changed_pots[i] = compare_float(current_pots[i],next_pots[i],epsilon);
+        changed_pots[i] = !compare_float(current_pots[i],next_pots[i],epsilon);
     }
     for(int i=0;i<2;i++){
         changed_stomps[i] = current_stomps[i]!=next_stomps[i];

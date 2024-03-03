@@ -22,7 +22,6 @@ void midi_task(float* pots ,bool *stomp,bool* changedPots,bool *changedStomps){
         if(changedPots[i]){
             auto data = (uint8_t)std::lerp(0,127,pots[i]) ;
             uint8_t buffer[3] = { 0xB0 | channel, midi_locations_pot[i], data};
-            printf("%x %x %x",buffer[0],buffer[1],buffer[2]);
             tud_midi_stream_write(cable_num,buffer,3);
         }
     }
