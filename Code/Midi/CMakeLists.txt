@@ -26,10 +26,10 @@ add_executable(${NAME}
         libs/tinyosc/tinyosc.c
         tusb_config.h
         #servers
-        dhcpserver/dhcpserver.c
-        dhcpserver/dhcpserver.h
-        dnsserver/dnsserver.c
-        dnsserver/dnsserver.h
+        Libs/dhcpserver/dhcpserver.c
+        Libs/dhcpserver/dhcpserver.h
+        Libs/dnsserver/dnsserver.c
+        Libs/dnsserver/dnsserver.h
         PedalHw/midi_handler.cpp
         Utils/float_compare.cpp
         PedalHw/osc_handler.cpp

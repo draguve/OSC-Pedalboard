@@ -16,8 +16,8 @@
 #include "pedal_settings.h"
 
 extern "C"{
-    #include "dhcpserver/dhcpserver.h"
-    #include "dnsserver/dnsserver.h"
+    #include "Libs/dhcpserver/dhcpserver.h"
+    #include "Libs/dnsserver/dnsserver.h"
 }
 
 
@@ -85,8 +85,9 @@ int main(void)
     sprintf(wifiname,"Pedal %s",uname);
     cyw43_arch_enable_sta_mode();
     printf("Connecting to Wi-Fi...\n");
-    if (cyw43_arch_wifi_connect_timeout_ms("Draguve4", "pioneer123", CYW43_AUTH_WPA2_MIXED_PSK, 30000)) {
-        printf("failed to connect. starting ap mode\n");
+    int error = cyw43_arch_wifi_connect_timeout_ms("Draguve4", "pioneer123", CYW43_AUTH_WPA2_MIXED_PSK, 30000);
+    if (error) {
+        printf("failed to connect. starting ap mode\n error_code:%d",error);
         cyw43_arch_disable_sta_mode();
         cyw43_arch_enable_ap_mode(wifiname,uname,CYW43_AUTH_WPA2_AES_PSK);
 
